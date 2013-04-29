@@ -60,4 +60,9 @@ public class BackupApplication {
 		guis.remove(gui);
 	}
 
+
+	public BackupAgent getBackupAgent() {
+		return agent;
+	}
+
 }

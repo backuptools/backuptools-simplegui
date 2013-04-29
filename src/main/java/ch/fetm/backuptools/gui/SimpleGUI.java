@@ -97,10 +97,10 @@ public class SimpleGUI {
 		JMenuBar menuBar = new JMenuBar();
 		frmBackuptoolsSimple.setJMenuBar(menuBar);
 		
-		JMenu mnBackup = new JMenu("Vaults");
+		JMenu mnBackup = new JMenu("Action");
 		menuBar.add(mnBackup);
 		
-		JMenuItem mntmVaultList = new JMenuItem("select vault");
+		JMenuItem mntmVaultList = new JMenuItem("show vault");
 		mntmVaultList.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser fileChooser = new JFileChooser();
@@ -111,6 +111,15 @@ public class SimpleGUI {
 			}
 		});
 		mnBackup.add(mntmVaultList);
+		
+		JMenuItem mntmMakeBackup = new JMenuItem("Make backup");
+		mntmMakeBackup.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				BackupAgentGUI backupgui = new BackupAgentGUI(app.getBackupAgent());
+				backupgui.setVisible(true);
+			}
+		});
+		mnBackup.add(mntmMakeBackup);
 		frmBackuptoolsSimple.getContentPane().setLayout(new BorderLayout(0, 0));
 
 		rootnode = new RootTreeNodeDatabases();
