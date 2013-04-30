@@ -123,11 +123,11 @@ public class SimpleGUI {
 		frmBackuptoolsSimple.getContentPane().setLayout(new BorderLayout(0, 0));
 
 		rootnode = new RootTreeNodeDatabases();
-		treedatabase = new JTree(rootnode);
-		frmBackuptoolsSimple.getContentPane().add(treedatabase, BorderLayout.WEST);
 		
 		JToolBar toolBar = new JToolBar();
 		frmBackuptoolsSimple.getContentPane().add(toolBar, BorderLayout.NORTH);
+		treedatabase = new JTree(rootnode);
+		frmBackuptoolsSimple.getContentPane().add(treedatabase, BorderLayout.WEST);
 		
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

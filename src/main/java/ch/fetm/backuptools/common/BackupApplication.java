@@ -35,12 +35,12 @@ public class BackupApplication {
 	private void doUpdateDatabaseList() {
 		for(SimpleGUI gui : guis){
 			gui.doUpdateDatabaseList(databases);
-			
 		}
 	}
 	
 	
 	public BackupApplication(){
+		agent = new BackupAgent(null);
 	
 	}
 	
