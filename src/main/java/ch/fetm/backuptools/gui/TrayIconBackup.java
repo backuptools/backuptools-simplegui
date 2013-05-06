@@ -112,7 +112,7 @@ public class TrayIconBackup {
 				exitSoftware();
 			}
 		});
-         
+        
         popup.add(aboutItem);
         popup.addSeparator();
         popup.add(configurationItem);
@@ -125,6 +125,7 @@ public class TrayIconBackup {
          
         try {
             tray.add(trayIcon);
+            
         } catch (AWTException e) {
             System.out.println("TrayIcon could not be added.");
             return;
@@ -132,6 +133,7 @@ public class TrayIconBackup {
     }
      
     protected void showRestoreList() {
+		TrayIconBackup.this.agent.setVaultDirectory(config.getDatabaseLocation());
 		RestoreAgentGUI restore = new RestoreAgentGUI(agent);		
 	}
 
