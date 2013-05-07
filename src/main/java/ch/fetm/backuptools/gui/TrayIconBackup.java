@@ -134,7 +134,8 @@ public class TrayIconBackup {
      
     protected void showRestoreList() {
 		TrayIconBackup.this.agent.setVaultDirectory(config.getDatabaseLocation());
-		RestoreAgentGUI restore = new RestoreAgentGUI(agent);		
+		RestoreAgentGUI restore = new RestoreAgentGUI(agent);
+		restore.setVisible(true);
 	}
 
 	protected void exitSoftware() {

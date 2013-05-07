@@ -21,20 +21,29 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JTable;
 import javax.swing.JComboBox;
 
+import ch.fetm.backuptools.common.Backup;
 import ch.fetm.backuptools.common.BackupAgentDirectoryVault;
+import javax.swing.SwingConstants;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.WindowEvent;
 
 
 public class RestoreAgentGUI extends JDialog {
 	private JTable table;
 
+	private String restore_path;
+	private List<Backup> backups;
 	/**
 	 * Create the dialog.
 	 * @param agent 
@@ -48,24 +57,54 @@ public class RestoreAgentGUI extends JDialog {
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
 				JButton okButton = new JButton("OK");
+				okButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						JFileChooser fileChooser = new JFileChooser();
+						fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+						if(fileChooser.showOpenDialog(getContentPane()) == JFileChooser.APPROVE_OPTION){
+							restore_path = fileChooser.getSelectedFile().toPath().toAbsolutePath().toString();
+							Backup backup = RestoreAgentGUI.this.backups.get(getTable().getSelectedColumn());
+							agent.restore(backup,restore_path);
+						}	
+					}
+				});
+				okButton.setHorizontalAlignment(SwingConstants.RIGHT);
 				okButton.setActionCommand("OK");
 				buttonPane.add(okButton);
 				getRootPane().setDefaultButton(okButton);
 			}
 			{
 				JButton cancelButton = new JButton("Cancel");
+				cancelButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+		                RestoreAgentGUI.this.setVisible(false);
+		                RestoreAgentGUI.this.dispatchEvent( 
+		                		new WindowEvent( RestoreAgentGUI.this,
+		                						 WindowEvent.WINDOW_CLOSING));
+					}
+				});
+				cancelButton.setHorizontalAlignment(SwingConstants.RIGHT);
 				cancelButton.setActionCommand("Cancel");
 				buttonPane.add(cancelButton);
 			}
 		}
 		{
-			//TODO Implement it please
-			String header[] ={"data backup"};
-			HashMap<String, String> backups = agent.getBackups();
+
+		}
+		{
+			table = new JTable();
 			getContentPane().add(table, BorderLayout.CENTER);
 		}
+		
+		String header[] ={"data backup"};
+		backups = agent.getBackups();
+		BackupTableModel model = new BackupTableModel(backups);
+		getTable().setModel(model);
 		
 	}
 
 	
+	public JTable getTable() {
+		return table;
+	}
 }
