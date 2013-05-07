@@ -44,11 +44,13 @@ public class RestoreAgentGUI extends JDialog {
 
 	private String restore_path;
 	private List<Backup> backups;
+	private BackupAgentDirectoryVault agent;
 	/**
 	 * Create the dialog.
 	 * @param agent 
 	 */
 	public RestoreAgentGUI(BackupAgentDirectoryVault agent) {
+		this.agent = agent;
 		setBounds(100, 100, 450, 300);
 		getContentPane().setLayout(new BorderLayout());
 		{
@@ -64,7 +66,7 @@ public class RestoreAgentGUI extends JDialog {
 						if(fileChooser.showOpenDialog(getContentPane()) == JFileChooser.APPROVE_OPTION){
 							restore_path = fileChooser.getSelectedFile().toPath().toAbsolutePath().toString();
 							Backup backup = RestoreAgentGUI.this.backups.get(getTable().getSelectedColumn());
-							agent.restore(backup,restore_path);
+							RestoreAgentGUI.this.agent.restore(backup,restore_path);
 						}	
 					}
 				});
