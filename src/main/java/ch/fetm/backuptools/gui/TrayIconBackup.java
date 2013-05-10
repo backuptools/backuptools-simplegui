@@ -19,21 +19,51 @@
 
 package ch.fetm.backuptools.gui; 
  
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.AWTException;
+import java.awt.Image;
+import java.awt.MenuItem;
+import java.awt.PopupMenu;
+import java.awt.SystemTray;
+import java.awt.TrayIcon;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import javax.swing.*;
+import javax.swing.ImageIcon;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
-import ch.fetm.backuptools.common.BackupAgentConfiguration;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import ch.fetm.backuptools.common.BackupAgentConfig;
 import ch.fetm.backuptools.common.BackupAgentDirectoryVault;
  
 public class TrayIconBackup {
-	
-    public static void main(String[] args) {
-        /* Use an appropriate Look and Feel */
-        try {
+
+    public static void main(String[] args) {	
+        setLookAndFeel();        
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+            	BackupAgentConfig config = BackupAgenConfigManager.readConfigurationFile();
+            	BackupAgentDirectoryVault agent = new BackupAgentDirectoryVault(config);
+                new TrayIconBackup(agent);
+
+            }
+        });
+    }
+
+	private static void setLookAndFeel() {
+		try {
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
         } catch (UnsupportedLookAndFeelException ex) {
             try {
@@ -44,23 +74,16 @@ public class TrayIconBackup {
         } catch (Exception e){
         	e.printStackTrace();
         }
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-            	BackupAgentDirectoryVault agent = new BackupAgentDirectoryVault();
-                new TrayIconBackup(agent);
-            }
-        });
-    }
+	}
 
 
 	private BackupAgentDirectoryVault  agent;
 	
-    private BackupAgentConfiguration config = new BackupAgentConfiguration();
     private TrayIcon trayIcon;
     private SystemTray tray;
     
-	private void showConfiguration() {
-	 JDialogBackuptoolsConfiguration configuration = new JDialogBackuptoolsConfiguration(config);
+	private void onClickConfiguration() {
+	 JDialogBackuptoolsConfiguration configuration = new JDialogBackuptoolsConfiguration(agent.getConfiguration());
 	 configuration.setVisible(true);
 	}
 
@@ -70,48 +93,15 @@ public class TrayIconBackup {
             System.out.println("SystemTray is not supported");
             return;
         }
-        final PopupMenu popup = new PopupMenu();
+        PopupMenu popup = new PopupMenu();
         trayIcon = new TrayIcon(createImage("bulb.gif", "Backuptools agent"));
-        tray = SystemTray.getSystemTray();
+        tray     = SystemTray.getSystemTray();
          
         MenuItem aboutItem         = new MenuItem("About");
-        aboutItem.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				//TODO do nothing
-			}
-		});
-        
         MenuItem configurationItem = new MenuItem("Configuration");
-        configurationItem.addActionListener(new ActionListener() {			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				showConfiguration();
-			}
-
-		});
         MenuItem RunItem           = new MenuItem("Run backup");
-        RunItem.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				TrayIconBackup.this.agent.setVaultDirectory(config.getDatabaseLocation());
-				TrayIconBackup.this.agent.backupDirectory(Paths.get(config.getSourcelocation()));
-			}
-		});
         MenuItem restoreItem       = new MenuItem("Restore");
-        restoreItem.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				showRestoreList();
-			}
-		});
         MenuItem exitItem          = new MenuItem("Exit");
-        exitItem.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				exitSoftware();
-			}
-		});
         
         popup.add(aboutItem);
         popup.addSeparator();
@@ -130,10 +120,41 @@ public class TrayIconBackup {
             System.out.println("TrayIcon could not be added.");
             return;
         }
+        
+        restoreItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showRestoreList();
+			}
+		});
+        exitItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				exitSoftware();
+			}
+		});
+        RunItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				TrayIconBackup.this.agent.doBackup();
+			}
+		});        
+        configurationItem.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				onClickConfiguration();
+			}
+
+		});
+        aboutItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//TODO do nothing
+			}
+		});
     }
      
     protected void showRestoreList() {
-		TrayIconBackup.this.agent.setVaultDirectory(config.getDatabaseLocation());
 		RestoreAgentGUI restore = new RestoreAgentGUI(agent);
 		restore.setVisible(true);
 	}

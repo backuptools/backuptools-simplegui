@@ -30,7 +30,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import javax.swing.JLabel;
 
-import ch.fetm.backuptools.common.BackupAgentConfiguration;
+import ch.fetm.backuptools.common.BackupAgentConfig;
 
 import java.awt.Insets;
 import java.awt.event.ActionListener;
@@ -46,29 +46,48 @@ public class JDialogBackuptoolsConfiguration extends JDialog {
 	private static final long serialVersionUID = 3636875839442016984L;
 	
 	private final JPanel contentPanel = new JPanel();
-	private String sourcePath   = null;
-	private String vaultPath    = null;
+	private String sourcePath;
+	private String vaultPath;
 	private JLabel lblVaultPath;
 	private JLabel lblSourcePath;
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		try {
-			JDialogBackuptoolsConfiguration dialog = new JDialogBackuptoolsConfiguration(null);
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
+	private BackupAgentConfig config;
+
+	private void onClickSelectVault() {
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		if(fileChooser.showOpenDialog(getContentPane()) == JFileChooser.APPROVE_OPTION){
+			vaultPath = fileChooser.getSelectedFile().toPath().toAbsolutePath().toString();
+			getLblVaultPath().setText(vaultPath);						
 		}
 	}
 
-	/**
-	 * Create the dialog.
-	 * @param b 
-	 * @param trayIconBackup 
-	 */
-	public JDialogBackuptoolsConfiguration(final BackupAgentConfiguration configuration) {
+	private void onClickSelectSource() {
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		if(fileChooser.showOpenDialog(getContentPane()) == JFileChooser.APPROVE_OPTION){
+			sourcePath = fileChooser.getSelectedFile().toPath().toAbsolutePath().toString();
+			getlblSourcePath().setText(sourcePath);
+		}
+	}
+	
+	private void onClickCancel() {
+		JDialogBackuptoolsConfiguration.this.setVisible(false);
+		JDialogBackuptoolsConfiguration.this.dispatchEvent( 
+    		new WindowEvent( JDialogBackuptoolsConfiguration.this,
+    						 WindowEvent.WINDOW_CLOSING));
+	}
+	
+	private void onClickOk() {
+		JDialogBackuptoolsConfiguration.this.config.source_path =sourcePath;
+		JDialogBackuptoolsConfiguration.this.config.vault_path  =vaultPath;
+		BackupAgenConfigManager.writeConfigurationInFile(JDialogBackuptoolsConfiguration.this.config);
+        JDialogBackuptoolsConfiguration.this.setVisible(false);
+        JDialogBackuptoolsConfiguration.this.dispatchEvent( 
+        		new WindowEvent( JDialogBackuptoolsConfiguration.this,
+        						 WindowEvent.WINDOW_CLOSING));
+	}
+
+	private void buildInterfaceAndSubscribeEvent() {
 		setBounds(100, 100, 450, 130);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -83,12 +102,7 @@ public class JDialogBackuptoolsConfiguration extends JDialog {
 			JButton btnSelectVault = new JButton("Select vault");
 			btnSelectVault.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					JFileChooser fileChooser = new JFileChooser();
-					fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-					if(fileChooser.showOpenDialog(getContentPane()) == JFileChooser.APPROVE_OPTION){
-						vaultPath = fileChooser.getSelectedFile().toPath().toAbsolutePath().toString();
-						getLblVaultPath().setText(vaultPath);						
-					}
+					onClickSelectVault();
 				}
 			});
 			
@@ -111,12 +125,7 @@ public class JDialogBackuptoolsConfiguration extends JDialog {
 			JButton btnSelectSource = new JButton("Select source");
 			btnSelectSource.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {				
-					JFileChooser fileChooser = new JFileChooser();
-					fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-					if(fileChooser.showOpenDialog(getContentPane()) == JFileChooser.APPROVE_OPTION){
-						sourcePath = fileChooser.getSelectedFile().toPath().toAbsolutePath().toString();
-						getlblSourcePath().setText(sourcePath);
-					}	
+					onClickSelectSource();	
 				}
 			});
 
@@ -142,13 +151,7 @@ public class JDialogBackuptoolsConfiguration extends JDialog {
 				JButton okButton = new JButton("OK");
 				okButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						configuration.setSourceLocation(sourcePath);
-						configuration.setDatabaseLocation(vaultPath);
-						
-		                JDialogBackuptoolsConfiguration.this.setVisible(false);
-		                JDialogBackuptoolsConfiguration.this.dispatchEvent( 
-		                		new WindowEvent( JDialogBackuptoolsConfiguration.this,
-		                						 WindowEvent.WINDOW_CLOSING));
+						onClickOk();
 					}
 				});
 				
@@ -160,28 +163,32 @@ public class JDialogBackuptoolsConfiguration extends JDialog {
 				JButton cancelButton = new JButton("Cancel");
 				cancelButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {		                
-						JDialogBackuptoolsConfiguration.this.setVisible(false);
-						JDialogBackuptoolsConfiguration.this.dispatchEvent( 
-	                		new WindowEvent( JDialogBackuptoolsConfiguration.this,
-	                						 WindowEvent.WINDOW_CLOSING));
+						onClickCancel();
 					}
 				});
 				cancelButton.setActionCommand("Cancel");
 				buttonPane.add(cancelButton);
 			}
 		}
-		vaultPath = configuration.getDatabaseLocation();
-		sourcePath = configuration.getSourcelocation();
-		getlblSourcePath().setText(configuration.getSourcelocation());
-		getLblVaultPath().setText(configuration.getDatabaseLocation());
 	}
-
-	public JLabel getLblVaultPath() {
+	
+	private JLabel getLblVaultPath() {
 		return lblVaultPath;
 	}
-	public JLabel getlblSourcePath() {
+	
+	private JLabel getlblSourcePath() {
 		return lblSourcePath;
 	}
+	
+	public JDialogBackuptoolsConfiguration(BackupAgentConfig config) {
 
+		buildInterfaceAndSubscribeEvent();
+		
+		this.config = config;
+		vaultPath = config.vault_path;
+		sourcePath = config.source_path;
+		getlblSourcePath().setText(config.source_path);
+		getLblVaultPath().setText(config.vault_path);
 
+	}
 }

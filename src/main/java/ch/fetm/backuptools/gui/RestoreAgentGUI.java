@@ -41,16 +41,46 @@ import java.awt.event.WindowEvent;
 
 public class RestoreAgentGUI extends JDialog {
 	private JTable table;
-
 	private String restore_path;
 	private List<Backup> backups;
 	private BackupAgentDirectoryVault agent;
-	/**
-	 * Create the dialog.
-	 * @param agent 
-	 */
+
+	private void onClickOk() {
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		if(fileChooser.showOpenDialog(getContentPane()) == JFileChooser.APPROVE_OPTION){
+			restore_path = fileChooser.getSelectedFile().toPath().toAbsolutePath().toString();
+			Backup backup = RestoreAgentGUI.this.backups.get(getTable().getSelectedRow());
+			RestoreAgentGUI.this.agent.restore(backup,restore_path);
+			closeWindow();
+		}
+	}
+
+	private void onClickCancel() {
+		closeWindow();
+	}
+
+	private void closeWindow() {
+		RestoreAgentGUI.this.setVisible(false);
+        RestoreAgentGUI.this.dispatchEvent( 
+        		new WindowEvent( RestoreAgentGUI.this,
+        						 WindowEvent.WINDOW_CLOSING));
+	}
+
+	private JTable getTable() {
+		return table;
+	}
+
 	public RestoreAgentGUI(BackupAgentDirectoryVault agent) {
+		buildInterfaceAndSubscribeEvent();	
+		
 		this.agent = agent;
+		backups = agent.getBackups();
+		BackupTableModel model = new BackupTableModel(backups);
+		getTable().setModel(model);	
+	}
+
+	private void buildInterfaceAndSubscribeEvent() {
 		setBounds(100, 100, 450, 300);
 		getContentPane().setLayout(new BorderLayout());
 		{
@@ -61,13 +91,7 @@ public class RestoreAgentGUI extends JDialog {
 				JButton okButton = new JButton("OK");
 				okButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						JFileChooser fileChooser = new JFileChooser();
-						fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-						if(fileChooser.showOpenDialog(getContentPane()) == JFileChooser.APPROVE_OPTION){
-							restore_path = fileChooser.getSelectedFile().toPath().toAbsolutePath().toString();
-							Backup backup = RestoreAgentGUI.this.backups.get(getTable().getSelectedColumn());
-							RestoreAgentGUI.this.agent.restore(backup,restore_path);
-						}	
+						onClickOk();	
 					}
 				});
 				okButton.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -79,10 +103,7 @@ public class RestoreAgentGUI extends JDialog {
 				JButton cancelButton = new JButton("Cancel");
 				cancelButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-		                RestoreAgentGUI.this.setVisible(false);
-		                RestoreAgentGUI.this.dispatchEvent( 
-		                		new WindowEvent( RestoreAgentGUI.this,
-		                						 WindowEvent.WINDOW_CLOSING));
+		                onClickCancel();
 					}
 				});
 				cancelButton.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -97,16 +118,5 @@ public class RestoreAgentGUI extends JDialog {
 			table = new JTable();
 			getContentPane().add(table, BorderLayout.CENTER);
 		}
-		
-		String header[] ={"data backup"};
-		backups = agent.getBackups();
-		BackupTableModel model = new BackupTableModel(backups);
-		getTable().setModel(model);
-		
-	}
-
-	
-	public JTable getTable() {
-		return table;
 	}
 }
