@@ -54,7 +54,13 @@ public class TrayIconBackup {
         setLookAndFeel();        
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-            	BackupAgentConfig config = BackupAgenConfigManager.readConfigurationFile();
+            	BackupAgentConfig config;
+            	if(BackupAgenConfigManager.ConfigfileExist()){
+            		config = BackupAgenConfigManager.readConfigurationFile();
+            	}else{
+            		config = new BackupAgentConfig();
+            		JDialogBackuptoolsConfiguration dialog = new JDialogBackuptoolsConfiguration(config);
+            	}
             	BackupAgentDirectoryVault agent = new BackupAgentDirectoryVault(config);
                 new TrayIconBackup(agent);
 
