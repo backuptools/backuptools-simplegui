@@ -31,6 +31,7 @@ import java.awt.GridBagConstraints;
 import javax.swing.JLabel;
 
 import ch.fetm.backuptools.common.BackupAgentConfig;
+import ch.fetm.backuptools.common.BackupAgentDirectoryVault;
 
 import java.awt.Insets;
 import java.awt.event.ActionListener;
@@ -51,6 +52,8 @@ public class JDialogBackuptoolsConfiguration extends JDialog {
 	private JLabel lblVaultPath;
 	private JLabel lblSourcePath;
 	private BackupAgentConfig config;
+
+	private BackupAgentDirectoryVault agent;
 
 	private void onClickSelectVault() {
 		JFileChooser fileChooser = new JFileChooser();
@@ -78,10 +81,11 @@ public class JDialogBackuptoolsConfiguration extends JDialog {
 	}
 	
 	private void onClickOk() {
-		JDialogBackuptoolsConfiguration.this.config.source_path =sourcePath;
-		JDialogBackuptoolsConfiguration.this.config.vault_path  =vaultPath;
+		JDialogBackuptoolsConfiguration.this.config.setSource_path(sourcePath);
+		JDialogBackuptoolsConfiguration.this.config.setVault_path(vaultPath);
 		BackupAgenConfigManager.writeConfigurationInFile(JDialogBackuptoolsConfiguration.this.config);
-        JDialogBackuptoolsConfiguration.this.setVisible(false);
+        agent.setConfiguration(config);
+		JDialogBackuptoolsConfiguration.this.setVisible(false);
         JDialogBackuptoolsConfiguration.this.dispatchEvent( 
         		new WindowEvent( JDialogBackuptoolsConfiguration.this,
         						 WindowEvent.WINDOW_CLOSING));
@@ -180,15 +184,16 @@ public class JDialogBackuptoolsConfiguration extends JDialog {
 		return lblSourcePath;
 	}
 	
-	public JDialogBackuptoolsConfiguration(BackupAgentConfig config) {
+	public JDialogBackuptoolsConfiguration(BackupAgentDirectoryVault agent) {
 
 		buildInterfaceAndSubscribeEvent();
 		
-		this.config = config;
-		vaultPath = config.vault_path;
-		sourcePath = config.source_path;
-		getlblSourcePath().setText(config.source_path);
-		getLblVaultPath().setText(config.vault_path);
+		this.agent = agent;
+		config = agent.getConfiguration();
+		vaultPath = config.getVault_path();
+		sourcePath = config.getSource_path();
+		getlblSourcePath().setText(config.getSource_path());
+		getLblVaultPath().setText(config.getVault_path());
 
 	}
 }

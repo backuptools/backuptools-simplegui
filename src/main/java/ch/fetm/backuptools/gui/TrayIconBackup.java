@@ -20,6 +20,7 @@
 package ch.fetm.backuptools.gui; 
  
 import java.awt.AWTException;
+import java.awt.Dialog;
 import java.awt.Image;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
@@ -34,6 +35,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -55,15 +57,13 @@ public class TrayIconBackup {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
             	BackupAgentConfig config;
-            	if(BackupAgenConfigManager.ConfigfileExist()){
-            		config = BackupAgenConfigManager.readConfigurationFile();
-            	}else{
+            	config = BackupAgenConfigManager.readConfigurationFile();
+            	if(config == null){
             		config = new BackupAgentConfig();
-            		JDialogBackuptoolsConfiguration dialog = new JDialogBackuptoolsConfiguration(config);
             	}
+            	
             	BackupAgentDirectoryVault agent = new BackupAgentDirectoryVault(config);
                 new TrayIconBackup(agent);
-
             }
         });
     }
@@ -89,7 +89,7 @@ public class TrayIconBackup {
     private SystemTray tray;
     
 	private void onClickConfiguration() {
-	 JDialogBackuptoolsConfiguration configuration = new JDialogBackuptoolsConfiguration(agent.getConfiguration());
+	 JDialogBackuptoolsConfiguration configuration = new JDialogBackuptoolsConfiguration(agent);
 	 configuration.setVisible(true);
 	}
 
@@ -136,13 +136,13 @@ public class TrayIconBackup {
         exitItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				exitSoftware();
+				onClickExit();
 			}
 		});
         RunItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				TrayIconBackup.this.agent.doBackup();
+				onClickBackup();
 			}
 		});        
         configurationItem.addActionListener(new ActionListener() {			
@@ -165,9 +165,13 @@ public class TrayIconBackup {
 		restore.setVisible(true);
 	}
 
-	protected void exitSoftware() {
+	protected void onClickExit() {
 		tray.remove(trayIcon);
 		System.exit(0);
+	}
+
+	private void onClickBackup() {
+		agent.doBackup();
 	}
 
 	protected Image createImage(String path, String description) {

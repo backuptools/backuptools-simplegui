@@ -1,6 +1,15 @@
 package ch.fetm.backuptools.gui;
 
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,6 +22,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.omg.CORBA.portable.OutputStream;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -26,77 +36,39 @@ public abstract class BackupAgenConfigManager {
 		BackupAgentConfig config = new BackupAgentConfig();
     	
 		Path configfile = getConfigFile();
-    	
-    	DocumentBuilderFactory builderfactory = DocumentBuilderFactory.newInstance();
-    	DocumentBuilder builder;
-    	
+		if(!Files.exists(configfile))
+			return null;
+		
 		try {
-			builder = builderfactory.newDocumentBuilder();
-			Document document = builder.parse(configfile.toFile());
-        	
-			document.getDocumentElement().normalize();
-        	
-			NodeList nodes = document.getElementsByTagName("config");
-        	Node node = nodes.item(0);
-        	
-        	if(node.getNodeType() == Node.ELEMENT_NODE)
-        	{
-        		Element element = (Element) node;
-        		config.source_path = element.getElementsByTagName("source_path")
-        							 	.item(0)
-        							 	.getChildNodes()
-        							 	.item(0)
-        							 	.getNodeValue();
-        		
-        		config.vault_path  = element.getElementsByTagName("vault_path")
-        								.item(0)
-        								.getChildNodes()
-        								.item(0)
-        								.getNodeValue();
-        	}
-    	} catch (Exception e) {
-		e.printStackTrace();
+			XMLDecoder in = new XMLDecoder( new BufferedInputStream( 
+												new FileInputStream(configfile.toFile())));
+			config = (BackupAgentConfig) in.readObject();
+			in.close();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+		
 		return config;
 	}
 
 	public static void writeConfigurationInFile(BackupAgentConfig config) {
 		Path configfile = getConfigFile();
-    	
-    	DocumentBuilderFactory builderfactory = DocumentBuilderFactory.newInstance();
-    	DocumentBuilder builder;
-		try {
-			builder = builderfactory.newDocumentBuilder();
-			Document document = builder.parse(configfile.toFile());
-        	document.getDocumentElement().normalize();
-        	NodeList nodes = document.getElementsByTagName("config");
-        	Node node = nodes.item(0);
-        	if(node.getNodeType() == Node.ELEMENT_NODE)
-        	{
-        		Element element = (Element) node;
-        		
-        		element.getElementsByTagName("source_path") 
-        			   	.item(0)
-        			   	.getChildNodes()
-        			   	.item(0)
-        			   	.setNodeValue(config.source_path);
-        		
-        		element.getElementsByTagName("vault_path")
-        				.item(0)
-        				.getChildNodes()
-        				.item(0)
-        				.setNodeValue(config.vault_path);
-        	}
-        	
-    		TransformerFactory transformerFactory = TransformerFactory.newInstance();
-    		Transformer transformer = transformerFactory.newTransformer();
-    		DOMSource source = new DOMSource(document);
-    		StreamResult result = new StreamResult(configfile.toFile());
-    		transformer.transform(source, result);
-    	} catch (Exception e) {
-		e.printStackTrace();
+		try {	
+			if(Files.exists(configfile)){
+					Files.delete(configfile);
+				
+			}else{
+				Files.createFile(configfile);
+				XMLEncoder out = new XMLEncoder( new FileOutputStream(configfile.toFile()));
+				out.writeObject(config);
+				out.flush();
+				out.close();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-	}
+			
+    }
 
 	private static Path getConfigFile() {
 		String home = System.getProperty("user.home");
