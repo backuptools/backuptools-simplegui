@@ -30,6 +30,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import javax.swing.JLabel;
 
+import ch.fetm.backuptools.common.BackupAgenConfigManager;
 import ch.fetm.backuptools.common.BackupAgentConfig;
 import ch.fetm.backuptools.common.BackupAgentDirectoryVault;
 
@@ -37,6 +38,8 @@ import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 
 public class JDialogBackuptoolsConfiguration extends JDialog {
@@ -153,6 +156,7 @@ public class JDialogBackuptoolsConfiguration extends JDialog {
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
 				JButton okButton = new JButton("OK");
+				
 				okButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						onClickOk();

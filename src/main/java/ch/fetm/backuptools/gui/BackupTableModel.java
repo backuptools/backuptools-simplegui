@@ -27,6 +27,10 @@ import javax.swing.table.AbstractTableModel;
 import ch.fetm.backuptools.common.Backup;
 
 public class BackupTableModel extends AbstractTableModel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1884888199621065995L;
 	private final String[]header  = {"date","signature"};
 	private final List<Backup> backups = new ArrayList<Backup>();
 	

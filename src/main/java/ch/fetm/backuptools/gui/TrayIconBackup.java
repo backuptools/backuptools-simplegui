@@ -47,6 +47,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import ch.fetm.backuptools.common.BackupAgenConfigManager;
 import ch.fetm.backuptools.common.BackupAgentConfig;
 import ch.fetm.backuptools.common.BackupAgentDirectoryVault;
  
@@ -57,13 +58,22 @@ public class TrayIconBackup {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
             	BackupAgentConfig config;
-            	config = BackupAgenConfigManager.readConfigurationFile();
-            	if(config == null){
-            		config = new BackupAgentConfig();
-            	}
+            	BackupAgentDirectoryVault agent;
             	
-            	BackupAgentDirectoryVault agent = new BackupAgentDirectoryVault(config);
-                new TrayIconBackup(agent);
+            	config = BackupAgenConfigManager.readConfigurationFile();
+
+            	if(config == null){
+                	config = new BackupAgentConfig();
+                	agent = new BackupAgentDirectoryVault(config);
+                	JDialogBackuptoolsConfiguration dialog = new JDialogBackuptoolsConfiguration(agent);
+                	dialog.setVisible(true);
+                }else{
+                	agent = new BackupAgentDirectoryVault(config);
+                }
+            	
+
+            	
+            	new TrayIconBackup(agent);
             }
         });
     }
@@ -100,7 +110,7 @@ public class TrayIconBackup {
             return;
         }
         PopupMenu popup = new PopupMenu();
-        trayIcon = new TrayIcon(createImage("bulb.gif", "Backuptools agent"));
+        trayIcon = new TrayIcon(createImage("g3051.png", "Backuptools agent"));
         tray     = SystemTray.getSystemTray();
          
         MenuItem aboutItem         = new MenuItem("About");
@@ -152,6 +162,7 @@ public class TrayIconBackup {
 			}
 
 		});
+      
         aboutItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
