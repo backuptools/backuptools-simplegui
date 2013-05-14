@@ -19,17 +19,13 @@
 package ch.fetm.backuptools.gui;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 import javax.swing.JTable;
-import javax.swing.JComboBox;
 
 import ch.fetm.backuptools.common.Backup;
 import ch.fetm.backuptools.common.BackupAgentDirectoryVault;
@@ -40,6 +36,11 @@ import java.awt.event.WindowEvent;
 
 
 public class RestoreAgentGUI extends JDialog {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7824855057171744435L;
+	
 	private JTable table;
 	private String restore_path;
 	private List<Backup> backups;

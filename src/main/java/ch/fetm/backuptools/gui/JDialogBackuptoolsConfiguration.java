@@ -28,7 +28,6 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
-import javax.swing.JLabel;
 
 import ch.fetm.backuptools.common.BackupAgenConfigManager;
 import ch.fetm.backuptools.common.BackupAgentConfig;
@@ -38,8 +37,10 @@ import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.GridLayout;
+import javax.swing.border.TitledBorder;
+import javax.swing.JTextField;
+import java.awt.Toolkit;
 
 
 public class JDialogBackuptoolsConfiguration extends JDialog {
@@ -50,20 +51,18 @@ public class JDialogBackuptoolsConfiguration extends JDialog {
 	private static final long serialVersionUID = 3636875839442016984L;
 	
 	private final JPanel contentPanel = new JPanel();
-	private String sourcePath;
-	private String vaultPath;
-	private JLabel lblVaultPath;
-	private JLabel lblSourcePath;
 	private BackupAgentConfig config;
 
 	private BackupAgentDirectoryVault agent;
+	private JTextField txtSource;
+	private JTextField txtVault;
 
 	private void onClickSelectVault() {
 		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		if(fileChooser.showOpenDialog(getContentPane()) == JFileChooser.APPROVE_OPTION){
-			vaultPath = fileChooser.getSelectedFile().toPath().toAbsolutePath().toString();
-			getLblVaultPath().setText(vaultPath);						
+			String vaultPath = fileChooser.getSelectedFile().toPath().toAbsolutePath().toString();
+			getTxtVault().setText(vaultPath);						
 		}
 	}
 
@@ -71,8 +70,8 @@ public class JDialogBackuptoolsConfiguration extends JDialog {
 		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		if(fileChooser.showOpenDialog(getContentPane()) == JFileChooser.APPROVE_OPTION){
-			sourcePath = fileChooser.getSelectedFile().toPath().toAbsolutePath().toString();
-			getlblSourcePath().setText(sourcePath);
+			String sourcePath = fileChooser.getSelectedFile().toPath().toAbsolutePath().toString();
+			getTxtSource().setText(sourcePath);
 		}
 	}
 	
@@ -84,8 +83,8 @@ public class JDialogBackuptoolsConfiguration extends JDialog {
 	}
 	
 	private void onClickOk() {
-		JDialogBackuptoolsConfiguration.this.config.setSource_path(sourcePath);
-		JDialogBackuptoolsConfiguration.this.config.setVault_path(vaultPath);
+		JDialogBackuptoolsConfiguration.this.config.setSource_path(getTxtSource().getText());
+		JDialogBackuptoolsConfiguration.this.config.setVault_path(getTxtVault().getText());
 		BackupAgenConfigManager.writeConfigurationInFile(JDialogBackuptoolsConfiguration.this.config);
         agent.setConfiguration(config);
 		JDialogBackuptoolsConfiguration.this.setVisible(false);
@@ -95,65 +94,12 @@ public class JDialogBackuptoolsConfiguration extends JDialog {
 	}
 
 	private void buildInterfaceAndSubscribeEvent() {
-		setBounds(100, 100, 450, 130);
-		getContentPane().setLayout(new BorderLayout());
-		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		getContentPane().add(contentPanel, BorderLayout.NORTH);
-		GridBagLayout gbl_contentPanel = new GridBagLayout();
-		gbl_contentPanel.columnWidths = new int[]{0, 0, 0};
-		gbl_contentPanel.rowHeights = new int[]{0, 0, 0};
-		gbl_contentPanel.columnWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
-		gbl_contentPanel.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
-		contentPanel.setLayout(gbl_contentPanel);
-		{
-			JButton btnSelectVault = new JButton("Select vault");
-			btnSelectVault.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					onClickSelectVault();
-				}
-			});
-			
-			GridBagConstraints gbc_btnSelectVault = new GridBagConstraints();
-			gbc_btnSelectVault.anchor = GridBagConstraints.WEST;
-			gbc_btnSelectVault.insets = new Insets(0, 0, 5, 5);
-			gbc_btnSelectVault.gridx = 0;
-			gbc_btnSelectVault.gridy = 0;
-			contentPanel.add(btnSelectVault, gbc_btnSelectVault);
-		}
-		{
-			lblVaultPath = new JLabel("");
-			GridBagConstraints gbc_lblVaultPath = new GridBagConstraints();
-			gbc_lblVaultPath.insets = new Insets(0, 0, 5, 0);
-			gbc_lblVaultPath.gridx = 1;
-			gbc_lblVaultPath.gridy = 0;
-			contentPanel.add(lblVaultPath, gbc_lblVaultPath);
-		}
-		{
-			JButton btnSelectSource = new JButton("Select source");
-			btnSelectSource.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {				
-					onClickSelectSource();	
-				}
-			});
-
-			GridBagConstraints gbc_btnSelectSource = new GridBagConstraints();
-			gbc_btnSelectSource.anchor = GridBagConstraints.WEST;
-			gbc_btnSelectSource.insets = new Insets(0, 0, 0, 5);
-			gbc_btnSelectSource.gridx = 0;
-			gbc_btnSelectSource.gridy = 1;
-			contentPanel.add(btnSelectSource, gbc_btnSelectSource);
-		}
-		{
-			lblSourcePath = new JLabel("");
-			GridBagConstraints gbc_label = new GridBagConstraints();
-			gbc_label.gridx = 1;
-			gbc_label.gridy = 1;
-			contentPanel.add(lblSourcePath, gbc_label);
-		}
+		setBounds(100, 100, 565, 183);
+		getContentPane().setLayout(new BorderLayout(0, 0));
 		{
 			JPanel buttonPane = new JPanel();
-			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
+			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			{
 				JButton okButton = new JButton("OK");
 				
@@ -178,26 +124,102 @@ public class JDialogBackuptoolsConfiguration extends JDialog {
 				buttonPane.add(cancelButton);
 			}
 		}
-	}
-	
-	private JLabel getLblVaultPath() {
-		return lblVaultPath;
-	}
-	
-	private JLabel getlblSourcePath() {
-		return lblSourcePath;
+		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		getContentPane().add(contentPanel);
+		contentPanel.setLayout(new GridLayout(0, 1, 0, 0));
+		{
+			JPanel panel = new JPanel();
+			panel.setBorder(new TitledBorder(null, "Select vault destination", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+			contentPanel.add(panel);
+			GridBagLayout gbl_panel = new GridBagLayout();
+			gbl_panel.columnWidths = new int[]{271, 100, 0};
+			gbl_panel.rowHeights = new int[]{15, 0};
+			gbl_panel.columnWeights = new double[]{1.0, 0.0, Double.MIN_VALUE};
+			gbl_panel.rowWeights = new double[]{0.0, Double.MIN_VALUE};
+			panel.setLayout(gbl_panel);
+			{
+				txtVault = new JTextField();
+				txtVault.setEditable(false);
+				GridBagConstraints gbc_txtVault = new GridBagConstraints();
+				gbc_txtVault.fill = GridBagConstraints.HORIZONTAL;
+				gbc_txtVault.insets = new Insets(0, 0, 0, 5);
+				gbc_txtVault.gridx = 0;
+				gbc_txtVault.gridy = 0;
+				panel.add(txtVault, gbc_txtVault);
+				txtVault.setColumns(10);
+			}
+			{
+				JButton btnSelectVault = new JButton("Select");
+				GridBagConstraints gbc_btnSelectVault = new GridBagConstraints();
+				gbc_btnSelectVault.anchor = GridBagConstraints.EAST;
+				gbc_btnSelectVault.gridx = 1;
+				gbc_btnSelectVault.gridy = 0;
+				panel.add(btnSelectVault, gbc_btnSelectVault);
+				btnSelectVault.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						onClickSelectVault();
+					}
+				});
+			}
+		}
+		{
+			JPanel panel = new JPanel();
+			panel.setBorder(new TitledBorder(null, "Selection source directory", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+			contentPanel.add(panel);
+			GridBagLayout gbl_panel = new GridBagLayout();
+			gbl_panel.columnWidths = new int[]{271, 100, 0};
+			gbl_panel.rowHeights = new int[]{15, 0};
+			gbl_panel.columnWeights = new double[]{1.0, 0.0, Double.MIN_VALUE};
+			gbl_panel.rowWeights = new double[]{0.0, Double.MIN_VALUE};
+			panel.setLayout(gbl_panel);
+			{
+				txtSource = new JTextField();
+				txtSource.setEditable(false);
+				GridBagConstraints gbc_txtSource = new GridBagConstraints();
+				gbc_txtSource.insets = new Insets(0, 0, 0, 5);
+				gbc_txtSource.fill = GridBagConstraints.HORIZONTAL;
+				gbc_txtSource.gridx = 0;
+				gbc_txtSource.gridy = 0;
+				panel.add(txtSource, gbc_txtSource);
+				txtSource.setColumns(10);
+			}
+			{
+				JButton btnSelectSource = new JButton("Select");
+				btnSelectSource.setToolTipText("Select source directory");
+				btnSelectSource.setSelectedIcon(null);
+				GridBagConstraints gbc_btnSelectSource = new GridBagConstraints();
+				gbc_btnSelectSource.fill = GridBagConstraints.VERTICAL;
+				gbc_btnSelectSource.anchor = GridBagConstraints.EAST;
+				gbc_btnSelectSource.gridx = 1;
+				gbc_btnSelectSource.gridy = 0;
+				panel.add(btnSelectSource, gbc_btnSelectSource);
+				btnSelectSource.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {				
+						onClickSelectSource();	
+					}
+				});
+			}
+		}
 	}
 	
 	public JDialogBackuptoolsConfiguration(BackupAgentDirectoryVault agent) {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(JDialogBackuptoolsConfiguration.class.getResource("/javax/swing/plaf/metal/icons/ocean/hardDrive.gif")));
+		setTitle("Configuration");
 
 		buildInterfaceAndSubscribeEvent();
 		
+
+		
+
 		this.agent = agent;
 		config = agent.getConfiguration();
-		vaultPath = config.getVault_path();
-		sourcePath = config.getSource_path();
-		getlblSourcePath().setText(config.getSource_path());
-		getLblVaultPath().setText(config.getVault_path());
-
+		getTxtVault().setText(config.getVault_path());
+		getTxtSource().setText(config.getSource_path());
+	}
+	protected JTextField getTxtVault() {
+		return txtVault;
+	}
+	protected JTextField getTxtSource() {
+		return txtSource;
 	}
 }
