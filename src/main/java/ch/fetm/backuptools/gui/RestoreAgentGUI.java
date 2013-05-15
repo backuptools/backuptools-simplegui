@@ -33,6 +33,8 @@ import javax.swing.SwingConstants;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
+import javax.swing.border.BevelBorder;
+import javax.swing.JScrollPane;
 
 
 public class RestoreAgentGUI extends JDialog {
@@ -45,6 +47,7 @@ public class RestoreAgentGUI extends JDialog {
 	private String restore_path;
 	private List<Backup> backups;
 	private BackupAgentDirectoryVault agent;
+	private JScrollPane scrollPane;
 
 	private void onClickOk() {
 		JFileChooser fileChooser = new JFileChooser();
@@ -73,12 +76,13 @@ public class RestoreAgentGUI extends JDialog {
 	}
 
 	public RestoreAgentGUI(BackupAgentDirectoryVault agent) {
+		setTitle("Select your backup for restoring");
 		buildInterfaceAndSubscribeEvent();	
 		
 		this.agent = agent;
 		backups = agent.getBackups();
 		BackupTableModel model = new BackupTableModel(backups);
-		getTable().setModel(model);	
+		getTable().setModel(model);
 	}
 
 	private void buildInterfaceAndSubscribeEvent() {
@@ -113,11 +117,19 @@ public class RestoreAgentGUI extends JDialog {
 			}
 		}
 		{
-
+			scrollPane = new JScrollPane();
+			getContentPane().add(scrollPane, BorderLayout.CENTER);
+			table = new JTable();
+			scrollPane.setViewportView(table);
+			table.setSurrendersFocusOnKeystroke(true);
+			table.setBorder(null);
+			table.setFillsViewportHeight(true);
 		}
 		{
-			table = new JTable();
-			getContentPane().add(table, BorderLayout.CENTER);
+
 		}
+	}
+	public JScrollPane getScrollPane() {
+		return scrollPane;
 	}
 }
