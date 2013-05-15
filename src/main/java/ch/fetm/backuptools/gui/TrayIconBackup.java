@@ -85,7 +85,7 @@ public class TrayIconBackup {
 	 JDialogBackuptoolsConfiguration configuration = new JDialogBackuptoolsConfiguration(agent);
 	 configuration.setVisible(true);
 	}
-
+	
 	public TrayIconBackup(BackupAgentDirectoryVault agent) {
     	this.agent = agent;
         if (!SystemTray.isSupported()) {
@@ -145,7 +145,6 @@ public class TrayIconBackup {
 			}
 
 		});
-      
         aboutItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

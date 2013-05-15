@@ -29,12 +29,19 @@ import javax.swing.JTable;
 
 import ch.fetm.backuptools.common.Backup;
 import ch.fetm.backuptools.common.BackupAgentDirectoryVault;
+import ch.fetm.backuptools.common.TreeInfo;
+
 import javax.swing.SwingConstants;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
 import javax.swing.border.BevelBorder;
 import javax.swing.JScrollPane;
+import javax.swing.JPopupMenu;
+import java.awt.Component;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.JMenuItem;
 
 
 public class RestoreAgentGUI extends JDialog {
@@ -48,17 +55,6 @@ public class RestoreAgentGUI extends JDialog {
 	private List<Backup> backups;
 	private BackupAgentDirectoryVault agent;
 	private JScrollPane scrollPane;
-
-	private void onClickOk() {
-		JFileChooser fileChooser = new JFileChooser();
-		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		if(fileChooser.showOpenDialog(getContentPane()) == JFileChooser.APPROVE_OPTION){
-			restore_path = fileChooser.getSelectedFile().toPath().toAbsolutePath().toString();
-			Backup backup = RestoreAgentGUI.this.backups.get(getTable().getSelectedRow());
-			RestoreAgentGUI.this.agent.restore(backup,restore_path);
-			closeWindow();
-		}
-	}
 
 	private void onClickCancel() {
 		closeWindow();
@@ -83,6 +79,48 @@ public class RestoreAgentGUI extends JDialog {
 		backups = agent.getBackups();
 		BackupTableModel model = new BackupTableModel(backups);
 		getTable().setModel(model);
+		{
+			JPopupMenu popupMenu = new JPopupMenu();
+			addPopup(table, popupMenu);
+			{
+				JMenuItem mntmExplore = new JMenuItem("Explore");
+				mntmExplore.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						RestoreAgentGUI.this.onClickExplore();
+					}
+				});
+				popupMenu.add(mntmExplore);
+			}
+			{
+				JMenuItem mntmRestore = new JMenuItem("restore");
+				mntmRestore.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						RestoreAgentGUI.this.onClickRestore();
+					}
+				});
+				popupMenu.add(mntmRestore);
+			}
+		}
+	}
+
+	protected void onClickExplore() {
+		Backup backup = RestoreAgentGUI.this.backups.get(getTable().getSelectedRow());
+		JFrameBackupExplorer explorer = new JFrameBackupExplorer(agent, backup);
+		explorer.setVisible(true);
+	}
+
+	protected void onClickRestore() {
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		if(fileChooser.showOpenDialog(getContentPane()) == JFileChooser.APPROVE_OPTION){
+			restore_path = fileChooser.getSelectedFile().toPath().toAbsolutePath().toString();
+			Backup backup = RestoreAgentGUI.this.backups.get(getTable().getSelectedRow());
+			TreeInfo tree = new TreeInfo();
+			tree.name = backup.getDate();
+			tree.SHA  = backup.getName();
+			tree.type = TreeInfo.TYPE_TREE;
+			RestoreAgentGUI.this.agent.restore(tree,restore_path);
+		}
 	}
 
 	private void buildInterfaceAndSubscribeEvent() {
@@ -93,19 +131,7 @@ public class RestoreAgentGUI extends JDialog {
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
-				JButton okButton = new JButton("OK");
-				okButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						onClickOk();	
-					}
-				});
-				okButton.setHorizontalAlignment(SwingConstants.RIGHT);
-				okButton.setActionCommand("OK");
-				buttonPane.add(okButton);
-				getRootPane().setDefaultButton(okButton);
-			}
-			{
-				JButton cancelButton = new JButton("Cancel");
+				JButton cancelButton = new JButton("Close");
 				cancelButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 		                onClickCancel();
@@ -131,5 +157,22 @@ public class RestoreAgentGUI extends JDialog {
 	}
 	public JScrollPane getScrollPane() {
 		return scrollPane;
+	}
+	private static void addPopup(Component component, final JPopupMenu popup) {
+		component.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					showMenu(e);
+				}
+			}
+			public void mouseReleased(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					showMenu(e);
+				}
+			}
+			private void showMenu(MouseEvent e) {
+				popup.show(e.getComponent(), e.getX(), e.getY());
+			}
+		});
 	}
 }
