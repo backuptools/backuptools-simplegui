@@ -57,9 +57,6 @@ public class TrayIconBackup {
                 }else{
                 	agent = new BackupAgentDirectoryVault(config);
                 }
-            	
-
-            	
             	new TrayIconBackup(agent);
             }
         });
@@ -81,7 +78,6 @@ public class TrayIconBackup {
 
 
 	private BackupAgentDirectoryVault  agent;
-	
     private TrayIcon trayIcon;
     private SystemTray tray;
     
@@ -127,7 +123,7 @@ public class TrayIconBackup {
         restoreItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				showRestoreList();
+				onClickRestore();
 			}
 		});
         exitItem.addActionListener(new ActionListener() {
@@ -153,12 +149,17 @@ public class TrayIconBackup {
         aboutItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				//TODO do nothing
+				onClickAbout();
 			}
 		});
     }
      
-    protected void showRestoreList() {
+    protected void onClickAbout() {
+		JDialogAbout dialog = new JDialogAbout();
+		dialog.setVisible(true);
+	}
+
+	protected void onClickRestore() {
 		RestoreAgentGUI restore = new RestoreAgentGUI(agent);
 		restore.setVisible(true);
 	}
