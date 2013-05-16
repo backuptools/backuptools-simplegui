@@ -1,10 +1,26 @@
+/*	Copyright 2013 Florian Mahon <florian@faivre-et-mahon.ch>
+ * 
+ *    This file is part of backuptools.
+ *    
+ *    This program is free software: you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation, either version 3 of the License, or
+ *    (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package ch.fetm.backuptools.gui;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.JTree;
-import javax.swing.BoxLayout;
 import javax.swing.SwingUtilities;
 
 import ch.fetm.backuptools.common.Backup;
@@ -22,14 +38,16 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 public class JFrameBackupExplorer extends JFrame {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3269076354741757127L;
 	private BackupAgentDirectoryVault agent;
-	private Backup backup;
 	private JTree tree;
 	
 
 	public JFrameBackupExplorer(BackupAgentDirectoryVault agent, Backup backup) {
 		this.agent  = agent;
-		this.backup = backup;
 		getContentPane().setLayout(new BorderLayout(0, 0));
 		setBounds(100, 100, 532, 448);
 		JScrollPane scrollPane = new JScrollPane();

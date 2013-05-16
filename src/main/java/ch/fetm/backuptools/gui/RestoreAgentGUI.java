@@ -35,7 +35,6 @@ import javax.swing.SwingConstants;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
-import javax.swing.border.BevelBorder;
 import javax.swing.JScrollPane;
 import javax.swing.JPopupMenu;
 import java.awt.Component;
@@ -116,7 +115,7 @@ public class RestoreAgentGUI extends JDialog {
 			restore_path = fileChooser.getSelectedFile().toPath().toAbsolutePath().toString();
 			Backup backup = RestoreAgentGUI.this.backups.get(getTable().getSelectedRow());
 			TreeInfo tree = new TreeInfo();
-			tree.name = backup.getDate();
+			tree.name = backup.getName();
 			tree.SHA  = backup.getName();
 			tree.type = TreeInfo.TYPE_TREE;
 			RestoreAgentGUI.this.agent.restore(tree,restore_path);
