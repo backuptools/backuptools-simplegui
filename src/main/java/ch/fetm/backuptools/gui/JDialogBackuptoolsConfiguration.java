@@ -41,6 +41,7 @@ import java.awt.GridLayout;
 import javax.swing.border.TitledBorder;
 import javax.swing.JTextField;
 import java.awt.Toolkit;
+import java.nio.file.Paths;
 
 
 public class JDialogBackuptoolsConfiguration extends JDialog {
@@ -52,8 +53,6 @@ public class JDialogBackuptoolsConfiguration extends JDialog {
 	
 	private final JPanel contentPanel = new JPanel();
 	private BackupAgentConfig config;
-
-	private BackupAgentDirectoryVault agent;
 	private JTextField txtSource;
 	private JTextField txtVault;
 
@@ -83,12 +82,11 @@ public class JDialogBackuptoolsConfiguration extends JDialog {
 	}
 	
 	private void onClickOk() {
-		JDialogBackuptoolsConfiguration.this.config.setSource_path(getTxtSource().getText());
-		JDialogBackuptoolsConfiguration.this.config.setVault_path(getTxtVault().getText());
-		BackupAgenConfigManager.writeConfigurationInFile(JDialogBackuptoolsConfiguration.this.config);
-        agent.setConfiguration(config);
-		JDialogBackuptoolsConfiguration.this.setVisible(false);
-        JDialogBackuptoolsConfiguration.this.dispatchEvent( 
+		config.setSource_path(Paths.get(getTxtSource().getText()));
+		config.setVault_path(Paths.get(getTxtVault().getText()));
+		BackupAgenConfigManager.writeConfigurationFile(config);
+		setVisible(false);
+        dispatchEvent( 
         		new WindowEvent( JDialogBackuptoolsConfiguration.this,
         						 WindowEvent.WINDOW_CLOSING));
 	}
@@ -202,24 +200,28 @@ public class JDialogBackuptoolsConfiguration extends JDialog {
 		}
 	}
 	
-	public JDialogBackuptoolsConfiguration(BackupAgentDirectoryVault agent) {
+	public JDialogBackuptoolsConfiguration(BackupAgentConfig config) {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(JDialogBackuptoolsConfiguration.class.getResource("/javax/swing/plaf/metal/icons/ocean/hardDrive.gif")));
 		setTitle("Configuration");
 
 		buildInterfaceAndSubscribeEvent();
 		
-
-		
-
-		this.agent = agent;
-		config = agent.getConfiguration();
-		getTxtVault().setText(config.getVault_path());
-		getTxtSource().setText(config.getSource_path());
+		this.config = config;
+		if(config.getVault_path() != null)
+			getTxtVault().setText(config.getVault_path().toAbsolutePath().toString());
+		if(config.getSource_path() != null)
+			getTxtSource().setText(config.getSource_path().toAbsolutePath().toString());
 	}
 	protected JTextField getTxtVault() {
 		return txtVault;
 	}
 	protected JTextField getTxtSource() {
 		return txtSource;
+	}
+
+	public static void showDialog(BackupAgentConfig config) {
+		JDialogBackuptoolsConfiguration dialog = new JDialogBackuptoolsConfiguration(config);
+		dialog.setModal(true);
+		dialog.setVisible(true);
 	}
 }

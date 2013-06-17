@@ -47,16 +47,16 @@ public class TrayIconBackup {
             	BackupAgentConfig config;
             	BackupAgentDirectoryVault agent;
             	
-            	config = BackupAgenConfigManager.readConfigurationFile();
+            	config = BackupAgenConfigManager.readConfigurationInFile();
 
             	if(config == null){
                 	config = new BackupAgentConfig();
-                	agent = new BackupAgentDirectoryVault(config);
-                	JDialogBackuptoolsConfiguration dialog = new JDialogBackuptoolsConfiguration(agent);
-                	dialog.setVisible(true);
-                }else{
-                	agent = new BackupAgentDirectoryVault(config);
+                	JDialogBackuptoolsConfiguration.showDialog(config);
+                	BackupAgenConfigManager.writeConfigurationFile(config);
                 }
+
+            	agent = new BackupAgentDirectoryVault(config);
+            	
             	new TrayIconBackup(agent);
             }
         });
@@ -82,8 +82,7 @@ public class TrayIconBackup {
     private SystemTray tray;
     
 	private void onClickConfiguration() {
-	 JDialogBackuptoolsConfiguration configuration = new JDialogBackuptoolsConfiguration(agent);
-	 configuration.setVisible(true);
+	 JDialogBackuptoolsConfiguration.showDialog(agent.getConfiguration());
 	}
 	
 	public TrayIconBackup(BackupAgentDirectoryVault agent) {
