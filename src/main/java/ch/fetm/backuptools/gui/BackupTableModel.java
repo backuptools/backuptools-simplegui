@@ -24,7 +24,7 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
-import ch.fetm.backuptools.common.Backup;
+import ch.fetm.backuptools.common.model.Backup;
 
 public class BackupTableModel extends AbstractTableModel {
 	/**

@@ -23,9 +23,9 @@ import javax.swing.JFrame;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 
-import ch.fetm.backuptools.common.Backup;
 import ch.fetm.backuptools.common.BackupAgentDirectoryVault;
-import ch.fetm.backuptools.common.TreeInfo;
+import ch.fetm.backuptools.common.model.Backup;
+import ch.fetm.backuptools.common.model.TreeInfo;
 
 import java.awt.BorderLayout;
 import javax.swing.JScrollPane;

@@ -27,9 +27,9 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 
-import ch.fetm.backuptools.common.Backup;
 import ch.fetm.backuptools.common.BackupAgentDirectoryVault;
-import ch.fetm.backuptools.common.TreeInfo;
+import ch.fetm.backuptools.common.model.Backup;
+import ch.fetm.backuptools.common.model.TreeInfo;
 
 import javax.swing.SwingConstants;
 import java.awt.event.ActionListener;

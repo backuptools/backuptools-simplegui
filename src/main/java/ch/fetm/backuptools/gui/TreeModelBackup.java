@@ -22,9 +22,9 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
-import ch.fetm.backuptools.common.Backup;
 import ch.fetm.backuptools.common.BackupAgentDirectoryVault;
-import ch.fetm.backuptools.common.TreeInfo;
+import ch.fetm.backuptools.common.model.Backup;
+import ch.fetm.backuptools.common.model.TreeInfo;
 
 public class TreeModelBackup implements TreeModel{
 	private BackupAgentDirectoryVault agent;
@@ -45,13 +45,13 @@ public class TreeModelBackup implements TreeModel{
 
 	@Override
 	public Object getChild(Object parent, int index) {
-		return agent.getTreeInfosOf(((TreeInfo)parent).SHA).get(index);
+		return agent.getTreeInfosOf(((TreeInfo)parent).SHA).getAllTreeInfo().get(index);
 	}
 
 	@Override
 	public int getChildCount(Object parent) {
 		if(((TreeInfo)parent).type.equals(TreeInfo.TYPE_TREE)){
-			return agent.getTreeInfosOf(((TreeInfo)parent).SHA).size();
+			return agent.getTreeInfosOf(((TreeInfo)parent).SHA).getAllTreeInfo().size();
 		}else{
 			return 0;
 		}
@@ -66,7 +66,7 @@ public class TreeModelBackup implements TreeModel{
 	@Override
 	public int getIndexOfChild(Object parent, Object child) {
 		if(((TreeInfo)parent).type == TreeInfo.TYPE_TREE){
-			return agent.getTreeInfosOf(((TreeInfo)parent).SHA).indexOf(child);	
+			return agent.getTreeInfosOf(((TreeInfo)parent).SHA).getAllTreeInfo().indexOf(child);	
 		}else{
 			return 0;
 		}
