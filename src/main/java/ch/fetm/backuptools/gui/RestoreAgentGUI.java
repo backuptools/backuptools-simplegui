@@ -19,6 +19,7 @@
 package ch.fetm.backuptools.gui;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -115,10 +116,12 @@ public class RestoreAgentGUI extends JDialog {
 			restore_path = fileChooser.getSelectedFile().toPath().toAbsolutePath().toString();
 			Backup backup = RestoreAgentGUI.this.backups.get(getTable().getSelectedRow());
 			TreeInfo tree = new TreeInfo();
+			List<TreeInfo> trees = new ArrayList<TreeInfo>();
 			tree.name = backup.getName();
 			tree.SHA  = backup.getName();
 			tree.type = TreeInfo.TYPE_TREE;
-			RestoreAgentGUI.this.agent.restore(tree,restore_path);
+			trees.add(tree);
+			RestoreAgentGUI.this.agent.restore(trees,restore_path);
 		}
 	}
 

@@ -28,6 +28,7 @@ import ch.fetm.backuptools.common.model.Backup;
 import ch.fetm.backuptools.common.model.TreeInfo;
 
 import java.awt.BorderLayout;
+
 import javax.swing.JScrollPane;
 import javax.swing.JPopupMenu;
 import java.awt.Component;
@@ -36,6 +37,8 @@ import java.awt.event.MouseEvent;
 import javax.swing.JMenuItem;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 public class JFrameBackupExplorer extends JFrame {
 	/**
@@ -66,7 +69,10 @@ public class JFrameBackupExplorer extends JFrame {
 				fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 				if(fileChooser.showOpenDialog(getContentPane()) == JFileChooser.APPROVE_OPTION){
 					String restore_path = fileChooser.getSelectedFile().toPath().toAbsolutePath().toString();
-					JFrameBackupExplorer.this.agent.restore(((TreeInfo)getTree().getLastSelectedPathComponent()),restore_path);
+					
+					List<TreeInfo> trees = new ArrayList<TreeInfo>();
+					trees.add((TreeInfo)getTree().getLastSelectedPathComponent());
+					JFrameBackupExplorer.this.agent.restore(trees,restore_path);
 				}
 			}
 		});
