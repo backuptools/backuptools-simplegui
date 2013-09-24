@@ -19,7 +19,7 @@
 
 package ch.fetm.backuptools.gui; 
  
-import java.awt.AWTException;
+ import java.awt.AWTException;
 import java.awt.Image;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
@@ -34,9 +34,9 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import ch.fetm.backuptools.BackupAgentFactory;
 import ch.fetm.backuptools.common.BackupAgenConfigManager;
 import ch.fetm.backuptools.common.BackupAgentConfig;
+import ch.fetm.backuptools.common.BackupAgentFactory;
 import ch.fetm.backuptools.common.IBackupAgent;
  
 public class TrayIconBackup {
