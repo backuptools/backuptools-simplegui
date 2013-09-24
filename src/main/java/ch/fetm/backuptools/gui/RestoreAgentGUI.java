@@ -28,7 +28,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 
-import ch.fetm.backuptools.common.BackupAgentDirectoryVault;
+import ch.fetm.backuptools.common.IBackupAgent;
 import ch.fetm.backuptools.common.model.Backup;
 import ch.fetm.backuptools.common.model.TreeInfo;
 
@@ -53,7 +53,7 @@ public class RestoreAgentGUI extends JDialog {
 	private JTable table;
 	private String restore_path;
 	private List<Backup> backups;
-	private BackupAgentDirectoryVault agent;
+	private IBackupAgent agent;
 	private JScrollPane scrollPane;
 
 	private void onClickCancel() {
@@ -71,12 +71,12 @@ public class RestoreAgentGUI extends JDialog {
 		return table;
 	}
 
-	public RestoreAgentGUI(BackupAgentDirectoryVault agent) {
+	public RestoreAgentGUI(IBackupAgent agent) {
 		setTitle("Select your backup for restoring");
 		buildInterfaceAndSubscribeEvent();	
 		
 		this.agent = agent;
-		backups = agent.getBackups();
+		backups = agent.getListBackups();
 		BackupTableModel model = new BackupTableModel(backups);
 		getTable().setModel(model);
 		{

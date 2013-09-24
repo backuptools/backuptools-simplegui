@@ -23,7 +23,7 @@ import javax.swing.JFrame;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 
-import ch.fetm.backuptools.common.BackupAgentDirectoryVault;
+import ch.fetm.backuptools.common.IBackupAgent;
 import ch.fetm.backuptools.common.model.Backup;
 import ch.fetm.backuptools.common.model.TreeInfo;
 
@@ -45,11 +45,11 @@ public class JFrameBackupExplorer extends JFrame {
 	 * 
 	 */
 	private static final long serialVersionUID = 3269076354741757127L;
-	private BackupAgentDirectoryVault agent;
+	private IBackupAgent agent;
 	private JTree tree;
 	
 
-	public JFrameBackupExplorer(BackupAgentDirectoryVault agent, Backup backup) {
+	public JFrameBackupExplorer(IBackupAgent agent, Backup backup) {
 		this.agent  = agent;
 		getContentPane().setLayout(new BorderLayout(0, 0));
 		setBounds(100, 100, 532, 448);
@@ -83,7 +83,7 @@ public class JFrameBackupExplorer extends JFrame {
 		setBackup(agent, backup);
 	}
 	
-	public void setBackup(BackupAgentDirectoryVault agent,Backup backup){
+	public void setBackup(IBackupAgent agent,Backup backup){
 		getTree().setModel(new TreeModelBackup(agent, backup));
 	}
 

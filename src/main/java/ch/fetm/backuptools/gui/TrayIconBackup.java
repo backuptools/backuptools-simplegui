@@ -34,28 +34,33 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import ch.fetm.backuptools.BackupAgentFactory;
 import ch.fetm.backuptools.common.BackupAgenConfigManager;
 import ch.fetm.backuptools.common.BackupAgentConfig;
-import ch.fetm.backuptools.common.BackupAgentDirectoryVault;
+import ch.fetm.backuptools.common.IBackupAgent;
  
 public class TrayIconBackup {
-
+	private static BackupAgentConfig _config;	
+	private IBackupAgent  agent;
+    private TrayIcon trayIcon;
+    private SystemTray tray;
+	
     public static void main(String[] args) {	
+    	
         setLookAndFeel();        
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-            	BackupAgentConfig config;
-            	BackupAgentDirectoryVault agent;
+            	IBackupAgent agent;
             	
-            	config = BackupAgenConfigManager.readConfigurationInFile();
+            	_config = BackupAgenConfigManager.readConfigurationInFile();
 
-            	if(config == null){
-                	config = new BackupAgentConfig();
-                	JDialogBackuptoolsConfiguration.showDialog(config);
-                	BackupAgenConfigManager.writeConfigurationFile(config);
+            	if(_config == null){
+                	_config = new BackupAgentConfig();
+                	JDialogBackuptoolsConfiguration.showDialog(_config);
+                	BackupAgenConfigManager.writeConfigurationFile(_config);
                 }
 
-            	agent = new BackupAgentDirectoryVault(config);
+            	agent = BackupAgentFactory.create(_config);
             	
             	new TrayIconBackup(agent);
             }
@@ -75,17 +80,14 @@ public class TrayIconBackup {
         	e.printStackTrace();
         }
 	}
-
-
-	private BackupAgentDirectoryVault  agent;
-    private TrayIcon trayIcon;
-    private SystemTray tray;
     
 	private void onClickConfiguration() {
-	 JDialogBackuptoolsConfiguration.showDialog(agent.getConfiguration());
+	 if(JDialogBackuptoolsConfiguration.OK_RESULT == JDialogBackuptoolsConfiguration.showDialog(_config)){
+		 agent = BackupAgentFactory.create(_config);
+	 }
 	}
 	
-	public TrayIconBackup(BackupAgentDirectoryVault agent) {
+	public TrayIconBackup(IBackupAgent agent) {
     	this.agent = agent;
         if (!SystemTray.isSupported()) {
             System.out.println("SystemTray is not supported");

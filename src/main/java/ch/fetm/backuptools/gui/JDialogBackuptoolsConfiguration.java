@@ -24,6 +24,7 @@ import java.awt.FlowLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import java.awt.GridBagLayout;
@@ -31,7 +32,6 @@ import java.awt.GridBagConstraints;
 
 import ch.fetm.backuptools.common.BackupAgenConfigManager;
 import ch.fetm.backuptools.common.BackupAgentConfig;
-import ch.fetm.backuptools.common.BackupAgentDirectoryVault;
 
 import java.awt.Insets;
 import java.awt.event.ActionListener;
@@ -46,15 +46,22 @@ import java.nio.file.Paths;
 
 public class JDialogBackuptoolsConfiguration extends JDialog {
 
+	public static final int CANCEL_RESULT = 0;
+	public static final int OK_RESULT = 1;
+
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 3636875839442016984L;
+
 	
 	private final JPanel contentPanel = new JPanel();
 	private BackupAgentConfig config;
 	private JTextField txtSource;
 	private JTextField txtVault;
+
+	private int result = JOptionPane.CANCEL_OPTION;
 
 	private void onClickSelectVault() {
 		JFileChooser fileChooser = new JFileChooser();
@@ -76,6 +83,7 @@ public class JDialogBackuptoolsConfiguration extends JDialog {
 	
 	private void onClickCancel() {
 		JDialogBackuptoolsConfiguration.this.setVisible(false);
+		result = CANCEL_RESULT;
 		JDialogBackuptoolsConfiguration.this.dispatchEvent( 
     		new WindowEvent( JDialogBackuptoolsConfiguration.this,
     						 WindowEvent.WINDOW_CLOSING));
@@ -86,6 +94,7 @@ public class JDialogBackuptoolsConfiguration extends JDialog {
 		config.setVault_path(Paths.get(getTxtVault().getText()));
 		BackupAgenConfigManager.writeConfigurationFile(config);
 		setVisible(false);
+		result = OK_RESULT;
         dispatchEvent( 
         		new WindowEvent( JDialogBackuptoolsConfiguration.this,
         						 WindowEvent.WINDOW_CLOSING));
@@ -219,9 +228,10 @@ public class JDialogBackuptoolsConfiguration extends JDialog {
 		return txtSource;
 	}
 
-	public static void showDialog(BackupAgentConfig config) {
+	public static int showDialog(BackupAgentConfig config) {
 		JDialogBackuptoolsConfiguration dialog = new JDialogBackuptoolsConfiguration(config);
 		dialog.setModal(true);
 		dialog.setVisible(true);
+		return dialog.result;
 	}
 }

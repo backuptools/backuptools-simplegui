@@ -22,15 +22,15 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
-import ch.fetm.backuptools.common.BackupAgentDirectoryVault;
+import ch.fetm.backuptools.common.IBackupAgent;
 import ch.fetm.backuptools.common.model.Backup;
 import ch.fetm.backuptools.common.model.TreeInfo;
 
 public class TreeModelBackup implements TreeModel{
-	private BackupAgentDirectoryVault agent;
+	private IBackupAgent agent;
 	private TreeInfo treeinfo;
 	
-	public TreeModelBackup(BackupAgentDirectoryVault agent, Backup backup){
+	public TreeModelBackup(IBackupAgent agent, Backup backup){
 		this.agent  = agent;
 		treeinfo = new TreeInfo();
 		treeinfo.name = backup.getDate();
