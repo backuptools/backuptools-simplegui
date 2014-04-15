@@ -16,7 +16,7 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ch.fetm.backuptools.gui;
+package org.fetm.backuptools.gui;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
