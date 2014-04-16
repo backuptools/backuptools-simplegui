@@ -118,7 +118,7 @@ public class TrayIconBackup {
                     BackupAgenConfigManager.writeConfigurationFile(_config);
                 }
 
-                agent = BackupAgentFactory.create(_config);
+                agent = BackupAgentFactory.getBackupAgent(_config);
 
                 new TrayIconBackup(agent);
             }
@@ -141,7 +141,7 @@ public class TrayIconBackup {
 
     private void onClickConfiguration() {
         if (JDialogBackuptoolsConfiguration.OK_RESULT == JDialogBackuptoolsConfiguration.showDialog(_config)) {
-            agent = BackupAgentFactory.create(_config);
+            agent = BackupAgentFactory.getBackupAgent(_config);
         }
     }
      
